@@ -6,7 +6,7 @@ struct YearBalance {
     principal:      f32,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Default)]
 struct Calculator {
     asking_price:   f32,
     down_payment:   f32,
@@ -28,18 +28,6 @@ impl Calculator {
         calculator.installment  = calculator.calculate_installment();
 
         calculator
-    }
-
-    fn default() -> Self {
-        Self { 
-            asking_price:   Default::default(), 
-            down_payment:   Default::default(), 
-            years_duration: Default::default(), 
-            installment:    Default::default(), 
-            rate:           Default::default(), 
-            principal:      Default::default(), 
-            payments:       Vec::<YearBalance>::default(),
-        }
     }
 
     fn calculate_principal(&self) -> f32 {
