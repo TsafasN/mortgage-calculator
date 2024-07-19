@@ -17,17 +17,17 @@ struct Calculator {
     payments:       Vec<YearBalance>,
 }
 
-impl Calculator {
+impl Calculator {    
     pub fn new() -> Self {
-        
-        let mut calculator = Calculator::default();
-
-        // TODO - Populate from gui values at initial rendering positions
-
-        calculator.principal    = calculator.calculate_principal();
-        calculator.installment  = calculator.calculate_installment();
-
-        calculator
+        Calculator::default().update()
+    }
+    
+    fn update(mut self) -> Self{
+        Self{
+            principal:      self.calculate_installment(),
+            installment:    self.calculate_principal(),
+            .. self
+        }
     }
 
     fn calculate_principal(&self) -> f32 {
