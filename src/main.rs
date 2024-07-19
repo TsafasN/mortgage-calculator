@@ -1,9 +1,9 @@
 #[derive(Debug)]
 struct YearBalance {
-    start_balance:  f32,
-    end_balance:    f32,
-    interest:       f32,
-    principal:      f32,
+    _start_balance:  f32,
+    _end_balance:    f32,
+    _interest:       f32,
+    _principal:      f32,
 }
 
 #[derive(Debug, Default)]
@@ -14,15 +14,15 @@ struct Calculator {
     installment:    f32,
     rate:           f32,
     principal:      f32,
-    payments:       Vec<YearBalance>,
+    _payments:       Vec<YearBalance>,
 }
 
 impl Calculator {    
     pub fn new() -> Self {
-        Calculator::default().update()
+        Self::default().update()
     }
     
-    fn update(mut self) -> Self{
+    fn update(self) -> Self{
         Self{
             principal:      self.calculate_installment(),
             installment:    self.calculate_principal(),
