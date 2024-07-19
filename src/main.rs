@@ -1,4 +1,4 @@
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 struct YearBalance {
     _start_balance:  f32,
     _end_balance:    f32,
@@ -14,7 +14,7 @@ struct Calculator {
     installment:    f32,
     rate:           f32,
     principal:      f32,
-    _payments:       Vec<YearBalance>,
+    payments:       Vec<YearBalance>,
 }
 
 impl Calculator {    
@@ -22,24 +22,41 @@ impl Calculator {
         Self::default().update()
     }
     
-    fn update(self) -> Self{
+    fn update(&self) -> Self{
         Self{
-            principal:      self.calculate_installment(),
-            installment:    self.calculate_principal(),
-            .. self
+            principal:      self.calculate_installment().unwrap(),
+            installment:    self.calculate_principal().unwrap(),
+            payments:       self.payments.clone(),
+            ..*self
         }
     }
 
-    fn calculate_principal(&self) -> f32 {
-        self.asking_price - self.down_payment
+    fn calculate_principal(&self) -> Result<f32, &str> {
+        if self.asking_price > self.down_payment {
+            Ok(self.principal_equation())
+        } else {
+            Err("Invalid calculation")
+        }
     }
 
-    fn calculate_installment(&self) -> f32 {
+    fn calculate_installment(&self) -> Result<f32,&str> {
+        if self.rate > 0.0 {
+            Ok(self.installment_equation())
+        } else {
+            Err("Invalid calculation")
+        }
+    }
+
+    fn principal_equation(&self) -> f32 {
+        self.asking_price - self.down_payment
+    }
+    
+    fn installment_equation(&self) -> f32 {
         let rate_1: f32 = (self.rate / 12.0) / 100.0;
         let rate_2: f32 = (1.0 + rate_1).powi((self.years_duration * 12) as i32);
-        
         self.principal / ((rate_2 - 1.0) / (rate_1 * rate_2))
     }
+
 }
 
 fn main() {
@@ -53,8 +70,7 @@ fn main() {
     payment_calculator.rate = 4.3;
     payment_calculator.years_duration = 30;
 
-    payment_calculator.principal    = payment_calculator.calculate_principal();
-    payment_calculator.installment  = payment_calculator.calculate_installment();
+    payment_calculator.update();
 
     println!("Calculator: {:?}", payment_calculator);
 
