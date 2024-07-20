@@ -1,4 +1,4 @@
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 struct YearBalance {
     _start_balance:  f32,
     _end_balance:    f32,
@@ -6,7 +6,7 @@ struct YearBalance {
     _principal:      f32,
 }
 
-#[derive(Debug, Default)]
+#[derive(Debug, Default, Clone, PartialEq)]
 struct Calculator {
     asking_price:   f32,
     down_payment:   f32,
@@ -14,25 +14,33 @@ struct Calculator {
     installment:    f32,
     rate:           f32,
     principal:      f32,
-    payments:       Vec<YearBalance>,
+    _payments:       Vec<YearBalance>,
 }
 
 impl Calculator {    
     pub fn new() -> Self {
-        Self::default().update()
+        let mut calculator = Self::default();
+
+        calculator.init_values();
+        calculator.update();
+
+        calculator
     }
     
-    fn update(&self) -> Self{
-        Self{
-            principal:      self.calculate_installment().unwrap(),
-            installment:    self.calculate_principal().unwrap(),
-            payments:       self.payments.clone(),
-            ..*self
-        }
+    fn init_values(&mut self) {
+        self.down_payment = 20000.0;
+        self.asking_price = 165000.0;
+        self.rate = 4.3;
+        self.years_duration = 30;
+    }
+
+    fn update(&mut self) {
+        self.principal = self.calculate_principal().unwrap();
+        self.installment = self.calculate_installment().unwrap();
     }
 
     fn calculate_principal(&self) -> Result<f32, &str> {
-        if self.asking_price > self.down_payment {
+        if self.asking_price >= self.down_payment {
             Ok(self.principal_equation())
         } else {
             Err("Invalid calculation")
@@ -56,24 +64,22 @@ impl Calculator {
         let rate_2: f32 = (1.0 + rate_1).powi((self.years_duration * 12) as i32);
         self.principal / ((rate_2 - 1.0) / (rate_1 * rate_2))
     }
-
 }
 
 fn main() {
     
     let mut payment_calculator = Calculator::new();
 
-    println!("Default installment: {}", payment_calculator.installment);
-
-    payment_calculator.down_payment = 20000.0;
-    payment_calculator.asking_price = 165000.0;
-    payment_calculator.rate = 4.3;
-    payment_calculator.years_duration = 30;
-
     payment_calculator.update();
 
-    println!("Calculator: {:?}", payment_calculator);
-
-    println!("Calculated installment: {}", payment_calculator.installment);
+    assert_eq!( payment_calculator, 
+                Calculator { 
+                    asking_price: 165000.0, 
+                    down_payment: 20000.0, 
+                    years_duration: 30, 
+                    installment: 717.5649, 
+                    rate: 4.3, 
+                    principal: 145000.0, 
+                    _payments: [].to_vec() });
 
 }
