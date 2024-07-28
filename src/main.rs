@@ -1,4 +1,6 @@
-#[derive(Debug, Default, Clone, PartialEq)]
+use serde::{Serialize, Deserialize};
+
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 struct YearBalance {
     year:               u8,
     start_balance:      f32,
